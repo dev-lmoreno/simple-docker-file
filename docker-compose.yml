@@ -1,0 +1,101 @@
+version: '3'
+services:
+  # nome do serviço nginx
+  nginx:
+    #build a partir do dockerfile
+    build:
+      # acessa o arquivo nginx.dockerfile para trazer as 'especificações' da imagem
+      dockerfile: ./docker/nginx.dockerfile
+      # diretório usado para realizar o build (onde está o dockerfile)
+      context: .
+    # carregando a imagem para esse serviço
+    image: devlmoreno/nginx
+    # nome do container
+    container_name: nginx
+    # portas liberadas para o nginx (HOST:CONTAINER)
+    ports:
+      - "80:80"
+    # rede criada para os containers se comunicarem por ela
+    networks: 
+      - my-production-network
+    #depende desses servicos para iniciar
+    depends_on:
+      - "node1"
+      - "node2"
+      - "node3"
+  # nome do serviço mongodb
+  mongodb:
+    # carregando a imagem para esse serviço
+    image: mongo
+    # rede criada para os containers se comunicarem por ela
+    networks:
+      - my-production-network
+  # nome do serviço node1
+  node1:
+    #build a partir do dockerfile
+    build:
+      # acessa o arquivo app-books.dockerfile para trazer as 'especificações' da imagem
+      dockerfile: ./docker/app-books.dockerfile
+      # diretório usado para realizar o build (onde está o dockerfile)
+      context: .
+    # carregando a imagem para esse serviço
+    image: devlmoreno/app-books
+    # nome do container
+    container_name: app-books-1
+    # porta liberada no container apenas
+    ports:
+      - "3000"
+    # rede criada para os containers se comunicarem por ela
+    networks: 
+      - my-production-network
+    #depende desses servicos para iniciar
+    depends_on:
+      - "mongodb"
+  # nome do serviço node2        
+  node2:
+    #build a partir do dockerfile
+    build:
+      # acessa o arquivo app-books.dockerfile para trazer as 'especificações' da imagem
+      dockerfile: ./docker/app-books.dockerfile
+      # diretório usado para realizar o build (onde está o dockerfile)
+      context: .
+    # carregando a imagem para esse serviço
+    image: devlmoreno/app-books
+    # nome do container
+    container_name: app-books-2
+    # porta liberada no container apenas
+    ports:
+      - "3000"
+    # rede criada para os containers se comunicarem por ela
+    networks: 
+      - my-production-network
+    #depende desse servico para iniciar
+    depends_on:
+      - "mongodb"
+  # nome do serviço node3
+  node3:
+    #build a partir do dockerfile
+    build:
+      # acessa o arquivo app-books.dockerfile para trazer as 'especificações' da imagem
+      dockerfile: ./docker/app-books.dockerfile
+      # diretório usado para realizar o build (onde está o dockerfile)
+      context: .
+    # carregando a imagem para esse serviço
+    image: devlmoreno/app-books
+    # nome do container
+    container_name: app-books-3
+    # porta liberada no container apenas
+    ports:
+      - "3000"
+    # rede criada para os containers se comunicarem por ela
+    networks: 
+      - my-production-network
+    #depende desse servico para iniciar
+    depends_on:
+      - "mongodb"
+# configuração da minha rede para comunicação entre os containers pelo nome do serviço
+networks: 
+  # nome da minha rede
+  my-production-network:
+    # setando o tipo do driver para a rede interna
+    driver: bridge
